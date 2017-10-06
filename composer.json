@@ -1,5 +1,5 @@
 {
-    "name": "fabfuel/prophiler",
+    "name": "davihu/prophiler",
     "description": "PHP Profiler & Developer Toolbar built for Phalcon",
     "minimum-stability": "stable",
     "license": "BSD-3-Clause",
