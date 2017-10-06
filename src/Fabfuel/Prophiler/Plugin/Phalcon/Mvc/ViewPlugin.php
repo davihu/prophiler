@@ -16,6 +16,7 @@ use Phalcon\Mvc\ViewInterface;
  */
 class ViewPlugin extends PluginAbstract implements ViewPluginInterface
 {
+
     /**
      * @var BenchmarkInterface[][]
      */
@@ -41,9 +42,13 @@ class ViewPlugin extends PluginAbstract implements ViewPluginInterface
      */
     public function beforeRenderView(Event $event, ViewInterface $view)
     {
-        $name = get_class($event->getSource()) . '::render: ' . basename($view->getActiveRenderPath());
+        $activeRenderPath = $view->getActiveRenderPath();
+        if (is_array($activeRenderPath)) {
+            $activeRenderPath = current($activeRenderPath);
+        }
+        $name = get_class($event->getSource()) . '::render: ' . basename($activeRenderPath);
         $metadata = [
-            'view' => realpath($view->getActiveRenderPath()) ?: $view->getActiveRenderPath(),
+            'view' => realpath($activeRenderPath) ?: $activeRenderPath,
             'level' => $this->getRenderLevel($view->getCurrentRenderLevel()),
         ];
 
@@ -92,7 +97,11 @@ class ViewPlugin extends PluginAbstract implements ViewPluginInterface
      */
     public function setBenchmark(ViewInterface $view, BenchmarkInterface $benchmark)
     {
-        $this->benchmarks[md5($view->getActiveRenderPath())][] = $benchmark;
+        $activeRenderPath = $view->getActiveRenderPath();
+        if (is_array($activeRenderPath)) {
+            $activeRenderPath = current($activeRenderPath);
+        }
+        $this->benchmarks[md5($activeRenderPath)][] = $benchmark;
     }
 
     /**
@@ -101,7 +110,11 @@ class ViewPlugin extends PluginAbstract implements ViewPluginInterface
      */
     public function getBenchmark(ViewInterface $view)
     {
-        return array_shift($this->benchmarks[md5($view->getActiveRenderPath())]);
+        $activeRenderPath = $view->getActiveRenderPath();
+        if (is_array($activeRenderPath)) {
+            $activeRenderPath = current($activeRenderPath);
+        }
+        return array_shift($this->benchmarks[md5($activeRenderPath)]);
     }
 
     /**
@@ -110,6 +123,10 @@ class ViewPlugin extends PluginAbstract implements ViewPluginInterface
      */
     public function getIdentifier(ViewInterface $view)
     {
-        return md5($view->getActiveRenderPath());
+        $activeRenderPath = $view->getActiveRenderPath();
+        if (is_array($activeRenderPath)) {
+            $activeRenderPath = current($activeRenderPath);
+        }
+        return md5($activeRenderPath);
     }
 }
